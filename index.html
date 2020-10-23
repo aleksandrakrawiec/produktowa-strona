@@ -74,47 +74,54 @@
                     <section id="add-product">
                         <h3>Dodaj produkt</h3>
                         <form>
-                            <div class="form-row form-group">
-                                <label for="inputName" class="col-sm-2 col-form-label">Nazwa towaru</label>
-                                <div class="col-sm-4">
+                            <div class="form-group row">
+                                <label for="inputName" class="col-sm-3 col-form-label">Nazwa towaru</label>
+                                <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputName" maxlength="10">
                                     <div class="invalid-feedback name-feedback">
                                         Proszę wprowadzić same litery.
                                     </div>
                                 </div>
-                                <label for="inputCode" class="col-sm-2 col-form-label">Kod towaru</label>
-                                <div class="col-sm-4">
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputCode" class="col-sm-3 col-form-label">Kod towaru</label>
+                                <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputCode" maxlength="5"">
                                     <div class="invalid-feedback">
                                         Proszę wprowadzić kod w formacie XX-XX.
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-row form-group">
-                                <label for="inputPrice" class="col-lg-2 col-form-label">Cena towaru</label>
-                                <div class="col-lg-2">
+                            
+                            <div class="form-group row">
+                                <label for="inputPrice" class="col-sm-3 col-form-label">Cena towaru</label>
+                                <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputPrice">
                                     <div class="invalid-feedback">
                                         Nieprawidłowa wartość
                                     </div>
                                 </div>
-                                <label for="inputVAT" class="col-lg-2 col-form-label">Stawka VAT</label>
-                                <div class="col-lg-2">
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputVAT" class="col-sm-3 col-form-label">Stawka VAT</label>
+                                <div class="col-sm-9">
                                     <input type="number" class="form-control" id="inputVAT">
                                     <div class="invalid-feedback">
                                         Nieprawidłowa wartość
                                     </div>
                                 </div>
-                                <label for="inputPriceBrutto" class="col-lg-2 col-form-label">Cena brutto</label>
-                                <div class="col-lg-2">
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputPriceBrutto" class="col-sm-3 col-form-label">Cena brutto</label>
+                                <div class="col-sm-9">
                                     <input type="number" class="form-control" id="inputPriceBrutto" disabled>
                                 </div>
                             </div>
-                            <div class="input-group mb-3 row">
-                                <div class="input-group-prepend col-sm-2">
+                            <div class="form-group  mb-3 row">
+                                <div class="input-group-prepend col-sm-3">
                                     <label for="inputGroupSelect01">Kategoria towaru</label>
                                 </div>
-                                <div class="col-sm-10">
+                                <div class="col-sm-9">
                                     <select class="custom-select" id="inputCategory" required>
                                         <option selected value="default">Wybierz</option>
                                         <option value="Kategoria 1">Kategoria 1</option>
@@ -128,8 +135,8 @@
                             </div>
 
                             <div class="form-group row">
-                                <div class="col-sm-2">Opcje towaru</div>
-                                <div class="col-sm-10">
+                                <div class="col-sm-3">Opcje towaru</div>
+                                <div class="col-sm-9">
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <input type="checkbox" id="option1" class="option">
@@ -169,8 +176,8 @@
                             </div>
                             <fieldset class="form-group">
                                 <div class="row">
-                                    <legend class="col-form-label col-sm-2 pt-0">Ocena</legend>
-                                    <div class="col-sm-10">
+                                    <legend class="col-form-label col-sm-3 pt-0">Ocena</legend>
+                                    <div class="col-sm-9">
                                         <div class="row">
                                             <div class="form-check col">
                                                 <input type="radio" name="rate" id="rate1" class="rate"
@@ -215,8 +222,8 @@
                                 </div>
                             </fieldset>
                             <div class="form-group row">
-                                <label for="inputPhoto" class="col-sm-2 col-form-label">Zdjęcie</label>
-                                <div class="col-sm-10">
+                                <label for="inputPhoto" class="col-sm-3 col-form-label">Zdjęcie</label>
+                                <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputPhoto" value="product-photo.jpg" disabled>
                                 </div>
                             </div>
