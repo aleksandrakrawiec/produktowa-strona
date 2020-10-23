@@ -1,5 +1,6 @@
 html {
   scroll-behavior: smooth;
+  margin: auto;
 }
 
 main {
@@ -67,6 +68,13 @@ section {
 #product-list {
   table {
     font-size: 0.9rem;
+
+    button {
+      width: 100%;
+      margin: 1px auto;
+      font-size: 0.7rem;
+      padding: 2px;
+    }
   }
 
   img {

@@ -35,7 +35,7 @@ $(function () {
     headers: {
         // disable sorting of the first & second column - before we would have to had made two entries
         // note that "first-name" is a class on the span INSIDE the first column th cell
-        '.photo, .code, .priceNetto, .vat, .category, .option' : {
+        '.photo, .code, .priceNetto, .vat, .category, .option, .buttons' : {
           // disable it by setting the property sorter to false
           sorter: false
         }
@@ -217,7 +217,9 @@ function addRow() {
       finalOptions +
       "</td><td>" +
       document.querySelector('input[name="rate"]:checked').value +
-      "</td></tr>",
+      "</td><td><button class='btn btn-small btn-dark button-edit'>Edytuj</button>" +
+      "<button class='btn btn-small btn-dark button-delete'>Usuń</button>" +
+      "<button class='btn btn-small btn-dark button-add-to-basket'>Dodaj do koszyka</button></td></tr>",
 
       $row = $(row),
       // resort table using the current sort; set to false to prevent resort, otherwise

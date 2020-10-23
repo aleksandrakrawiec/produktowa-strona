@@ -1,5 +1,6 @@
 html {
-  scroll-behavior: smooth; }
+  scroll-behavior: smooth;
+  margin: auto; }
 
 main .container-fluid {
   width: 100%;
@@ -42,6 +43,11 @@ section {
 
 #product-list table {
   font-size: 0.9rem; }
+  #product-list table button {
+    width: 100%;
+    margin: 1px auto;
+    font-size: 0.7rem;
+    padding: 2px; }
 #product-list img {
   width: 80px;
   height: auto; }
