@@ -234,27 +234,24 @@ function addRow() {
 
 
 sortSelect.addEventListener("change", function () {
-  $('.product-table').trigger('sortReset');
+  $('.product-table').trigger('update');
   if (this.value === "priceAsc") {
-    $("th.priceBrutto").click();
+    $(".product-table").trigger("sorton", [ [[5,0]] ]);
   }
   else if(this.value === "priceDesc") {
-    $("th.priceBrutto").click()
-    $("th.priceBrutto").click()
+    $(".product-table").trigger("sorton", [ [[5,1]] ]);
   }
   else if (this.value === "rateAsc") {
-    $("th.rate").click();
+    $(".product-table").trigger("sorton", [ [[8,0]] ]);
   }
   else if(this.value === "rateDesc") {
-    $("th.rate").click();
-    $("th.rate").click();
+    $(".product-table").trigger("sorton", [ [[8,1]] ]);
   }
   else if (this.value === "nameA") {
-    $("th.name").click();
+    $(".product-table").trigger("sorton", [ [[1,0]] ]);
   }
   else if(this.value === "nameZ") {
-    $("th.name").click();
-    $("th.name").click();
+    $(".product-table").trigger("sorton", [ [[1,1]] ]);
   } 
 });
 
