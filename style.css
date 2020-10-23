@@ -1,0 +1,49 @@
+html {
+  scroll-behavior: smooth; }
+
+main .container-fluid {
+  width: 100%;
+  padding: 10px 10px 60px; }
+main .no-margin {
+  margin: auto 0; }
+
+.footer {
+  background-color: #f5f5f5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center; }
+
+section {
+  padding-top: 60px; }
+
+.nav-item {
+  padding-left: 20px; }
+
+.no-padding {
+  padding-right: 0; }
+
+#add-product {
+  padding: auto; }
+  #add-product .button-div {
+    justify-content: center; }
+  #add-product .add-feedback {
+    text-align: center; }
+
+#address {
+  font-size: 0.9rem; }
+  #address .card .card-header {
+    text-align: center;
+    font-weight: bold; }
+  #address .card .card-body {
+    padding: 8px; }
+    #address .card .card-body li {
+      padding: 8px 0; }
+
+#product-list table {
+  font-size: 0.9rem; }
+#product-list img {
+  width: 80px;
+  height: auto; }
+
+/*# sourceMappingURL=style.css.map */

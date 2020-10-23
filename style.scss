@@ -1,0 +1,76 @@
+html {
+  scroll-behavior: smooth;
+}
+
+main {
+    .container-fluid {
+        width: 100%;
+        padding: 10px 10px 60px;
+      }
+
+      .no-margin {
+        margin: auto 0;
+      }
+}
+    
+
+.footer {
+  background-color: #f5f5f5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+section {
+  padding-top: 60px;
+}
+
+.nav-item {
+  padding-left: 20px;
+}
+
+.no-padding {
+  padding-right: 0;
+}
+
+#add-product {
+    padding: auto;
+    .button-div {
+        justify-content: center;
+    }
+
+    .add-feedback {
+        text-align: center;
+    }
+}
+
+#address {
+    font-size: 0.9rem;
+
+    .card {
+        .card-header {
+            text-align: center;
+            font-weight: bold;
+        }
+    
+        .card-body {
+            padding: 8px;
+            
+            li {
+                padding: 8px 0;
+            }
+        } 
+    }
+}
+
+#product-list {
+  table {
+    font-size: 0.9rem;
+  }
+
+  img {
+      width: 80px;
+      height: auto;
+  }
+}
