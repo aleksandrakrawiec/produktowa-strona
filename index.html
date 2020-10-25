@@ -51,13 +51,39 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Koszyk</h5>
+                        <h4 class="modal-title">Koszyk</h4>
                     </div>
                     <div class="modal-body">
-                        Zawartość koszyka
+                        <table class="table">
+                            <thead>
+                                <th scope="col">nazwa</th>
+                                <th scope="col">cena brutto</th>
+                                <th scope="col">liczba sztuk</th>
+                            </thead>
+                        </table>
+                        <div class="row">
+                            <div class="col-sm-4 delivery-col">
+                                <button class="btn btn-light delivery-btn">
+                                    Kurier <br>
+                                    <span class="delivery-cost">14,99</span> zł
+                                </button>
+                            </div>
+                            <div class="col-sm-4 delivery-col">
+                                <button class="btn btn-light delivery-btn">
+                                    Poczta <br>
+                                    <span class="delivery-cost">9,99</span> zł
+                                </button> 
+                            </div>
+                            <div class="col-sm-4 delivery-col">
+                                <button class="btn btn-light delivery-btn">
+                                    Odbiór osobisty <br>
+                                    <span class="delivery-cost">0</span> zł
+                                </button> 
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Kup</button>
                     </div>
                 </div>
             </div>
