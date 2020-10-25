@@ -14,6 +14,7 @@ var inputCategory = document.querySelector("#inputCategory");
 var options = document.querySelectorAll(".option");
 var rates = document.querySelectorAll(".rate");
 var inputImage = document.querySelector("#inputPhoto");
+var deleteButtons = document.querySelectorAll(".button-delete");
 var checkedOptions = 0;
 var isNameCorrect = false;
 var isCodeCorrect = false;
@@ -159,6 +160,12 @@ addButton.addEventListener("click", function () {
     isRateCorrect && isProductUnique()
   ) {
     addRow();
+    deleteButtons = document.querySelectorAll(".button-delete");
+
+      deleteButtons[deleteButtons.length-1].addEventListener("click", function(){
+        var rowNumber = this.closest('tr').rowIndex;
+        document.querySelector(".product-table").deleteRow(rowNumber);
+      });
     resetForm();
     document.querySelector(".add-feedback").style.display = "none";
     alert("Dodano nowy produkt.");
@@ -228,6 +235,9 @@ function addRow() {
     $('.product-table')
       .find('tbody').append($row)
       .trigger('addRows', [$row, resort]);
+
+      
+
     return false;
 
 }
@@ -278,4 +288,5 @@ function isProductUnique() {
     }
     return true;
 }
+
 
