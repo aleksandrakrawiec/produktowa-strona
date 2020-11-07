@@ -1,6 +1,6 @@
 const lettersOnlyExpression = /^[A-Za-zĄąĆćĘęŁłÓóŻżŻż]+$/;
 const numbersOnlyExpression = /^[0-9]{1,}$/;
-const moneyExpression = /^[0-9]{1,}\.[0-9]{2}$/;
+const moneyExpression = /^[0-9]{1,}\.[0-9]{1,2}$/;
 const productCodeExpression = /^[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}-[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}$/;
 
 var addButton = document.querySelector(".add-btn");
@@ -133,26 +133,68 @@ $(function () {
 // VALIDATION
 
 inputName.addEventListener("blur", function () {
-  validationMap.set("name", testExpression(this, lettersOnlyExpression));
+  var text = this.value;
+  var result = lettersOnlyExpression.test(text);
+  var feedbaackDiv = document.querySelector("#name-feedback");
+  var isNameValid = false;
+  if (text === "")  {
+    feedbaackDiv.innerText = "Pole obowiązkowe"
+    this.classList.add("is-invalid");
+  }
+  else if (result == false) {
+    feedbaackDiv.innerText = "Proszę wprowadzić same litery"
+    this.classList.add("is-invalid");
+  }
+  else {
+    this.classList.remove("is-invalid");
+    this.classList.add("is-valid");
+    isNameValid = true;
+  }
+
+  validationMap.set("name", isNameValid);
 });
 
 inputCode.addEventListener("blur", function () {
-  validationMap.set("code", testExpression(this, productCodeExpression));
+  var text = this.value;
+  var result = productCodeExpression.test(text);
+  var feedbaackDiv = document.querySelector("#code-feedback");
+  var isCodeValid = false;
+  if (text === "")  {
+    feedbaackDiv.innerText = "Pole obowiązkowe"
+    this.classList.add("is-invalid");
+  }
+  else if (result == false) {
+    feedbaackDiv.innerText = "Proszę wprowadzić kod w formacie XX-XX."
+    this.classList.add("is-invalid");
+  }
+  else {
+    this.classList.remove("is-invalid");
+    this.classList.add("is-valid");
+    isCodeValid = true;
+  }
+
+  validationMap.set("code", isCodeValid);
 });
 
 inputPrice.addEventListener("blur", function () {
   var text = this.value;
-  var isPriceCorrect;
+  var isPriceCorrect = false;
+  var feedbaackDiv = document.querySelector("#price-feedback");
+  var isCodeValid = false;
   var result = moneyExpression.test(text);
-  if (result == false) {
+  if(text === "") {
+    feedbaackDiv.innerText = "Pole obowiązkowe";
+    this.classList.add("is-invalid");
+  }
+  else if (result == false) {
     result = numbersOnlyExpression.test(text);
     if (result == false) {
-      inputPrice.classList.add("is-invalid");
-      isPriceCorrect = false;
+      feedbaackDiv.innerText = "Proszę wprowadzić liczbę";
+      this.classList.add("is-invalid");
     } else {
-      this.value += ".00";
-      inputPrice.classList.remove("is-invalid");
-      inputPrice.classList.add("is-valid");
+      this.value = parseInt(this.value).toFixed(2); // coś tu chyba jest nie tak, bo pokazuje jedną po przecinku
+      this.classList.remove("is-invalid");
+      this.classList.add("is-valid");
       isPriceCorrect = true;
       price = this.value;
       if (vat != null) {
@@ -160,8 +202,8 @@ inputPrice.addEventListener("blur", function () {
       }
     }
   } else {
-    inputPrice.classList.remove("is-invalid");
-    inputPrice.classList.add("is-valid");
+    this.classList.remove("is-invalid");
+    this.classList.add("is-valid");
     isPriceCorrect = true;
     price = this.value;
     if (vat != null) {
@@ -173,9 +215,24 @@ inputPrice.addEventListener("blur", function () {
 });
 
 inputVAT.addEventListener("blur", function () {
-  var isVATCorrect;
-  if ((isVATCorrect = testExpression(this, numbersOnlyExpression))) {
+  var text = this.value;
+  var isVATCorrect = false;
+  var result = numbersOnlyExpression.test(text);
+  var feedbaackDiv = document.querySelector("#vat-feedback");
+
+  if (text === "")  {
+    feedbaackDiv.innerText = "Pole obowiązkowe"
+    this.classList.add("is-invalid");
+  }
+  else if (result == false) {
+    feedbaackDiv.innerText = "Proszę wprowadzić liczbę"
+    this.classList.add("is-invalid");
+  }
+  else {
     vat = this.value;
+    isVATCorrect = true;
+    this.classList.remove("is-invalid");
+    this.classList.add("is-valid");
     if (price != null) {
       inputPriceBrutto.value = (price * (1 + vat / 100)).toFixed(2);
     }
