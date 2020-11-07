@@ -1,7 +1,7 @@
-const lettersOnlyExpression = /^[A-Za-z]+$/;
+const lettersOnlyExpression = /^[A-Za-zĄąĆćĘęŁłÓóŻżŻż]+$/;
 const numbersOnlyExpression = /^[0-9]{1,}$/;
 const moneyExpression = /^[0-9]{1,}\.[0-9]{2}$/;
-const productCodeExpression = /^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{2}$/;
+const productCodeExpression = /^[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}-[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}$/;
 
 var addButton = document.querySelector(".add-btn");
 var inputName = document.querySelector("#inputName");
@@ -15,8 +15,10 @@ var options = document.querySelectorAll(".option");
 var rates = document.querySelectorAll(".rate");
 var inputImage = document.querySelector("#inputPhoto");
 var deleteButtons = document.querySelectorAll(".button-delete");
-var addToBasketButtons = document.querySelectorAll(".button-add-to-basket");
-var checkedOptions = 0;
+var addToCartButtons = document.querySelectorAll(".button-add-to-cart");
+var editButtons = document.querySelectorAll(".button-edit");
+var editRowIndex = null;
+var modalInputs = document.querySelectorAll(".modal input");
 
 var validationMap = new Map([
   ["name", false],
@@ -28,66 +30,98 @@ var validationMap = new Map([
   ["rate", false],
 ]);
 
-// var cartProducts = JSON.parse(window.localStorage.getItem("cartProducts"));
 var cartProducts = [];
-if(window.localStorage.getItem("cartProducts") != null) {
+if (window.localStorage.getItem("cartProducts") != null) {
   cartProducts = JSON.parse(window.localStorage.getItem("cartProducts"));
   cartProducts.forEach(addToCart);
 }
-
-// var isNameCorrect = false;
-// var isCodeCorrect = false;
-// var isPriceCorrect = false;
-// var isVATCorrect = false;
-// var isCategoryCorrect = false;
-// var isOptionCorrect = false;
-// var isRateCorrect = false;
 
 var price = null;
 var vat = null;
 
 var sortSelect = document.querySelector("#sortSelect");
 
-var product = {
-  "photo" : "product-photo.jpg",
-  "name" : "Fotel",
-  "code" : "12-34",
-  "price" : "21.37",
-  "vat" : "12",
-  "priceBrutto" : "34",
-  "category" : "elo",
-  "options" : "Opcja 2",
-  "rate" : "3",
-}
 
-addRow(product);
+document.querySelector(".modal-footer button").addEventListener("click", function() {
+  var cartTable = document.querySelector(".cart-table");
+  var length = cartTable.rows.length;
+  for(var i=1; i<length; i++) {
+    cartTable.deleteRow(1);
+  }
+  cartProducts = [];
+  window.localStorage.clear();
+  document.querySelector('#post').checked = true;
+  alert("Dziękujemy za zakupy. Zapraszamy ponownie.");
 
-product = {
-  "photo" : "product-photo.jpg",
-  "name" : "Kanapa",
-  "code" : "21-34",
-  "price" : "12.37",
-  "vat" : "22",
-  "priceBrutto" : "41",
-  "category" : "elo siema",
-  "options" : "Opcja 5",
-  "rate" : "5",
-}
+})
 
-addRow(product);
+
+document.querySelector("#product-list-view").addEventListener("change", function() {
+  if(this.value === "list") {
+    document.querySelector("#table-div").style.display = "initial";
+    document.querySelector(".gallery").style.display = "none";
+  }
+  else {
+    document.querySelector("#table-div").style.display = "none";
+    document.querySelector(".gallery").style.display = "inline-flex";
+  }
+
+})
+
+// var product = {
+//   photo: "product-photo.jpg",
+//   name: "Fotel",
+//   code: "12-34",
+//   price: 240.0,
+//   vat: 23,
+//   priceBrutto: (240 * (1 + 23 / 100)).toFixed(2),
+//   category: "Kategoria 1",
+//   options: ["Opcja 2", "Opcja 4"],
+//   rate: "3",
+// };
+
+// addRow(product);
+
+// product = {
+//   photo: "product-photo.jpg",
+//   name: "Kanapa",
+//   code: "21-34",
+//   price: 1200.0,
+//   vat: 18,
+//   priceBrutto: (1200 * (1 + 18 / 100)).toFixed(2),
+//   category: "Kategoria 3",
+//   options: ["Opcja 1", "Opcja 3", "Opcja 4"],
+//   rate: "5",
+// };
+
+// addRow(product);
+
+const input = document.querySelector("#myFile");
+input.addEventListener("change", function() {
+  const reader = new FileReader();
+  reader.onload = function() {
+    const jsonFile = reader.result;
+    var jsonProducts = JSON.parse(jsonFile);
+    for (var i = 0; i < jsonProducts.length; i++) {
+      addRow(jsonProducts[i]);
+      addToGallery(jsonProducts[i]);
+    }
+  }
+  reader.readAsText(input.files[0]);
+}, false);
 
 
 $(function () {
   $(".product-table").tablesorter({
     theme: "ice",
     headers: {
-        // disable sorting of the first & second column - before we would have to had made two entries
-        // note that "first-name" is a class on the span INSIDE the first column th cell
-        '.photo, .code, .priceNetto, .vat, .category, .option, .buttons' : {
-          // disable it by setting the property sorter to false
-          sorter: false
-        }
+      // disable sorting of the first & second column - before we would have to had made two entries
+      // note that "first-name" is a class on the span INSIDE the first column th cell
+      ".photo, .code, .priceNetto, .vat, .category, .option, .buttons": {
+        // disable it by setting the property sorter to false
+        sorter: false,
       },
+    },
 
     widgets: ["zebra"], // initialize zebra striping of the table
     widgetOptions: {
@@ -96,12 +130,10 @@ $(function () {
   });
 });
 
-
-
 // VALIDATION
 
 inputName.addEventListener("blur", function () {
-  validationMap.set("name", testExpression(this, lettersOnlyExpression)); 
+  validationMap.set("name", testExpression(this, lettersOnlyExpression));
 });
 
 inputCode.addEventListener("blur", function () {
@@ -138,7 +170,6 @@ inputPrice.addEventListener("blur", function () {
   }
 
   validationMap.set("price", isPriceCorrect);
-
 });
 
 inputVAT.addEventListener("blur", function () {
@@ -168,11 +199,7 @@ inputCategory.addEventListener("blur", function () {
 for (var i = 0; i < options.length; i++) {
   var isOptionCorrect;
   options[i].addEventListener("change", function () {
-    if (this.checked) {
-      checkedOptions++;
-    } else {
-      checkedOptions--;
-    }
+    var checkedOptions = document.querySelectorAll(".option:checked").length;
 
     if (checkedOptions >= 2) {
       document.querySelector(".option-feedback").style.display = "none";
@@ -207,34 +234,46 @@ addButton.addEventListener("click", function () {
     document.querySelector(".option-feedback").style.display = "none";
   }
 
-  if (
-    isProductValid() && isProductUnique()
-  ) {
-    var optionList =  document.querySelectorAll('.option:checked+label');
-    var finalOptions = ""; 
+  if (isProductValid()) {
+    if (isProductUnique() || editRowIndex !== null) {
+      var optionList = document.querySelectorAll(".option:checked+label");
 
-    for(var i=0; i<optionList.length; i++) {
-        finalOptions += optionList[i].innerText + "<br>";
+      var options = [];
+      for (var i = 0; i < optionList.length; i++) {
+        options.push(optionList[i].innerText);
+      }
+
+      var product = {
+        photo: inputPhoto.value,
+        name: inputName.value,
+        code: inputCode.value,
+        price: inputPrice.value,
+        vat: inputVAT.value,
+        priceBrutto: inputPriceBrutto.value,
+        category: inputCategory.value,
+        options: options,
+        rate: document.querySelector('input[name="rate"]:checked').value,
+      };
+
+      if (editRowIndex !== null) {
+        editRow(product);
+        alert("Uaktualniono produkt");
+        editRowIndex = null;
+        addButton.innerText = "Dodaj";
+      } else {
+        addRow(product);
+        addToGallery(product);
+        alert("Dodano nowy produkt.");
+      }
+
+      resetForm();
+      document.querySelector(".add-feedback").style.display = "none";
+    } else {
+      if (editRowIndex === null) {
+        alert("Produkt o podanej nazwie już istnieje.");
+      }
     }
-
-    var product = {
-      "photo" : inputPhoto.value,
-      "name" : inputName.value,
-      "code" : inputCode.value,
-      "price" : inputPrice.value,
-      "vat" : inputVAT.value,
-      "priceBrutto" : inputPriceBrutto.value,
-      "category" : inputCategory.value,
-      "options" : finalOptions,
-      "rate" : document.querySelector('input[name="rate"]:checked').value,
-    }
-
-    addRow(product);
-    alert("Dodano nowy produkt.");
   } else {
-    if(!isProductUnique()) {
-        alert("Produkt o podanej nazwie już istnieje.")
-    }
     document.querySelector(".add-feedback").style.display = "block";
   }
 });
@@ -259,8 +298,8 @@ function testExpression(input, expression) {
 }
 
 function isProductValid() {
-  for(var [key, value] of validationMap) {
-    if(value === false) {
+  for (var [key, value] of validationMap) {
+    if (value === false) {
       return false;
     }
   }
@@ -269,11 +308,17 @@ function isProductValid() {
 
 //add row
 function addRow(product) {
+  var options = document.createElement("ul");
+  for (var item of product.options) {
+    var element = document.createElement("li");
+    element.innerHTML = item;
+    options.appendChild(element);
+  }
 
-    var row =
+  var row =
       "<tr><td><img src='" +
       product.photo +
-      "'></td><td>" +
+      "'></td><td class='name'>" +
       product.name +
       "</td><td>" +
       product.code +
@@ -286,72 +331,132 @@ function addRow(product) {
       "</td><td>" +
       product.category +
       "</td><td>" +
-      product.options +
+      options.outerHTML +
       "</td><td>" +
       product.rate +
       "</td><td><button class='btn btn-small btn-dark button-edit'>Edytuj</button>" +
       "<button class='btn btn-small btn-dark button-delete'>Usuń</button>" +
-      "<button class='btn btn-small btn-dark button-add-to-basket'>Dodaj do koszyka</button></td></tr>",
+      "<button class='btn btn-small btn-dark button-add-to-cart'>Dodaj do koszyka</button></td></tr>",
+    $row = $(row),
+    // resort table using the current sort; set to false to prevent resort, otherwise
+    // any other value in resort will automatically trigger the table resort.
+    resort = true;
+  $(".product-table")
+    .find("tbody")
+    .append($row)
+    .trigger("addRows", [$row, resort]);
 
-      $row = $(row),
-      // resort table using the current sort; set to false to prevent resort, otherwise
-      // any other value in resort will automatically trigger the table resort.
-      resort = true;
-    $('.product-table')
-      .find('tbody').append($row)
-      .trigger('addRows', [$row, resort]);
+  deleteButtons = document.querySelectorAll(".button-delete");
 
+  deleteButtons[deleteButtons.length - 1].addEventListener(
+    "click",
+    function () {
+      var rowNumber = this.closest("tr").rowIndex;
+      document.querySelector(".product-table").deleteRow(rowNumber);
+      alert("Usunięto produkt.");
+    }
+  );
 
-      deleteButtons = document.querySelectorAll(".button-delete");
+  addToCartButtons = document.querySelectorAll(".button-add-to-cart");
 
-      deleteButtons[deleteButtons.length-1].addEventListener("click", function(){
-        var rowNumber = this.closest('tr').rowIndex;
-          document.querySelector(".product-table").deleteRow(rowNumber);
-          alert("Usunięto produkt.");
-        });
-    
-    
-      addToBasketButtons = document.querySelectorAll(".button-add-to-basket");
-      var index = addToBasketButtons.length-1;
+  addToCartButtons[addToCartButtons.length - 1].addEventListener(
+    "click",
+    function () {
+      var index = this.closest("tr").rowIndex;
+      var cartProduct = {
+        name: document.querySelector(".product-table").rows[index].cells[1]
+          .innerText,
+        price: document.querySelector(".product-table").rows[index].cells[5]
+          .innerText,
+        numberOfitems: 1,
+      };
+
       
-      addToBasketButtons[index].addEventListener("click", function(){
-        var cartProduct = {
-          name : document.querySelector(".product-table").rows[index+1].cells[1].innerText,
-          price : document.querySelector(".product-table").rows[index+1].cells[5].innerText,
-          numberOfitems : 1
-        };
-        cartProducts.push(cartProduct);
-        
-        window.localStorage.setItem('cartProducts', JSON.stringify(cartProducts));
-      
-        addToCart(cartProduct);
-    
-      })
-    
-        
-        resetForm();
-        document.querySelector(".add-feedback").style.display = "none";
-        
-    
+      cartProducts.push(cartProduct);
 
-    return false;
+      window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
 
+      addToCart(cartProduct);
+
+      alert("Przedmiot zostal dodany do koszyka.");
+    }
+  );
+
+  editButtons = document.querySelectorAll(".button-edit");
+
+  editButtons[editButtons.length - 1].addEventListener("click", function () {
+    resetForm();
+
+    var index = this.closest("tr").rowIndex;
+    var table = document.querySelector(".product-table");
+    inputPhoto.value = table.rows[
+      index
+    ].cells[0].firstElementChild.getAttribute("src");
+    inputName.value = table.rows[index].cells[1].innerText;
+    inputCode.value = table.rows[index].cells[2].innerText;
+    inputPrice.value = table.rows[index].cells[3].innerText;
+    inputVAT.value = table.rows[index].cells[4].innerText;
+    inputPriceBrutto.value = table.rows[index].cells[5].innerText;
+    inputCategory.value = table.rows[index].cells[6].innerText;
+    vat = inputVAT.value;
+    price = inputPrice.value;
+
+    var options = [];
+    var liElements = table.rows[index].cells[7].firstElementChild.children;
+
+    for (element of liElements) {
+      options.push(element.innerText);
+    }
+
+    var labels = document.querySelectorAll("#options label");
+
+    for (element of options) {
+      for (label of labels) {
+        if (element === label.innerText) {
+          label.parentElement.firstElementChild.checked = true;
+        }
+      }
+    }
+
+    var rate = table.rows[index].cells[8].innerText;
+
+    var radioButtons = document.querySelectorAll("#rates input");
+
+    for (element of radioButtons) {
+      if (element.value === rate) {
+        element.checked = true;
+      }
+    }
+    editRowIndex = index;
+    addButton.innerText = "Edytuj";
+
+    for (var [key, value] of validationMap) {
+      validationMap.set(key, true);
+    }
+
+    var inputs = document.querySelectorAll("form input");
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].classList.remove("is-invalid");
+      inputs[i].classList.add("is-valid");
+    }
+  });
+
+  return false;
 }
 
-
 sortSelect.addEventListener("change", function () {
-  $('.product-table').trigger('update');
+  $(".product-table").trigger("update");
 
   var map = new Map([
-    ["priceAsc",  [[[5,0]]] ],
-    ["priceDesc", [[[5,1]]] ],
-    ["rateAsc",   [[[8,0]]] ],
-    ["rateDesc",  [[[8,1]]] ],
-    ["nameA",     [[[1,0]]] ],
-    ["nameZ",     [[[1,1]]] ],
+    ["priceAsc", [[[5, 0]]]],
+    ["priceDesc", [[[5, 1]]]],
+    ["rateAsc", [[[8, 0]]]],
+    ["rateDesc", [[[8, 1]]]],
+    ["nameA", [[[1, 0]]]],
+    ["nameZ", [[[1, 1]]]],
   ]);
 
-  for(var [key, value] of map) {
+  for (var [key, value] of map) {
     if (this.value === key) {
       $(".product-table").trigger("sorton", value);
       break;
@@ -359,40 +464,97 @@ sortSelect.addEventListener("change", function () {
   }
 });
 
-
-
 // reset form
 function resetForm() {
-    document.querySelector("form").reset();
-    var inputs= document.querySelectorAll("form input");
-    inputCategory.classList.remove("is-valid");
-    for(var i=0; i<inputs.length; i++) {
-        inputs[i].classList.remove("is-valid");
-    }
-    checkedOptions = 0;
+  document.querySelector("form").reset();
+  var inputs = document.querySelectorAll("form input");
+  inputCategory.classList.remove("is-valid");
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].classList.remove("is-valid");
+  }
+
+  for (var [key, value] of validationMap) {
+    validationMap.set(key, false);
+  }
 }
 
 // checking is product unique
 function isProductUnique() {
-    var names = document.querySelectorAll(".name");
-    for(var i=0; i<names.length; i++) {
-        if(names[i].innerText === inputName.value) {
-            return false;
-        }
+  var names = document.querySelectorAll(".name");
+  for (var i = 0; i < names.length; i++) {
+    if (names[i].innerText === inputName.value) {
+      return false;
     }
-    return true;
+  }
+  return true;
 }
-
 
 function addToCart(product) {
   var newRow = document.createElement("TR");
-  newRow.innerHTML = 
-  "<td>" +
-  product.name +
-  "<tr><td>" +
-  product.price +
-  "<tr><td>" +
-  product.numberOfitems +
-  "</td>";
-  document.querySelector(".basket-table").appendChild(newRow);
+  newRow.innerHTML =
+    "<td>" +
+    product.name +
+    "</td><td class='cart-price-brutto'>" +
+    product.price +
+    "</td><td><input type='number' value =" + product.numberOfitems + " class='numberOfProducts'></td>";
+  document.querySelector(".cart-table").appendChild(newRow);
+  calculateTotalSum();
+
+  modalInputs = document.querySelectorAll(".modal input");
+
+  for(var i=0; i<modalInputs.length; i++) {
+    modalInputs[i].addEventListener("change", function(){
+      calculateTotalSum();
+    })
+  }
+
+}
+
+function editRow(product) { // dodać tu edytowanie w galerii
+  var options = document.createElement("ul");
+  for (var item of product.options) {
+    var element = document.createElement("li");
+    element.innerHTML = item;
+    options.appendChild(element);
+  }
+
+
+  var table = document.querySelector(".product-table");
+  table.rows[editRowIndex].cells[0].firstElementChild.setAttribute(
+    "src",
+    product.photo
+  );
+  table.rows[editRowIndex].cells[1].innerText = product.name;
+  table.rows[editRowIndex].cells[2].innerText = product.code;
+  table.rows[editRowIndex].cells[3].innerText = product.price;
+  table.rows[editRowIndex].cells[4].innerText = product.vat;
+  table.rows[editRowIndex].cells[5].innerText = product.priceBrutto;
+  table.rows[editRowIndex].cells[6].innerText = product.category;
+  table.rows[editRowIndex].cells[7].innerHTML = options.outerHTML;
+  table.rows[editRowIndex].cells[8].innerText = product.rate;
+
+  var galleryProduct = document.querySelectorAll(".gallery figure")[editRowIndex-1];
+  galleryProduct.innerHTML = "<div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
+  product.name +"</h5>" + product.price + " zł (" + product.priceBrutto + " zł)";
+}
+
+function calculateTotalSum() {
+  var toPay = parseFloat(document.querySelector('input[name="delivery"]:checked').value);
+  var numbersOfProducts = document.querySelectorAll(".modal td input");
+  for(var j=0; j<numbersOfProducts.length; j++) {
+    toPay += parseFloat(numbersOfProducts[j].value) * parseFloat(document.querySelector(".cart-table").rows[j+1].cells[1].innerText);
+  }
+  document.querySelector(".to-pay").innerText = toPay.toFixed(2);
+}
+
+function addToGallery(product) {
+  var newElement = document.createElement("figure");
+  newElement.classList.add("col-md-3");
+  newElement.classList.add("col-sm-4");
+  newElement.classList.add("col-xs-6");
+  newElement.classList.add("img-thumbnail");
+  newElement.classList.add("gallery-element");
+  newElement.innerHTML = "<div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
+  product.name +"</h5>" + product.price + " zł (" + product.priceBrutto + " zł)";
+  document.querySelector("#product-list .gallery").appendChild(newElement);
 }

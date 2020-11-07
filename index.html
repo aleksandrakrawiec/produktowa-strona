@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100">
+<html lang="pl" class="h-100">
 
 <head>
     <meta charset="UTF-8">
@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.ice.min.css" integrity="sha512-KNtKlElwWdbTLSi3E9U95sSnTqhnt12n7lEn1ap3sPB9oiFcIrKTUprR5E9KU2BjmqsRQWcEG5lRHWfvUIlHHA==" crossorigin="anonymous" />
     <!-- Custom stylesheet -->
     <link rel="stylesheet" href="style.css">
+
+
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -54,33 +56,52 @@
                         <h4 class="modal-title">Koszyk</h4>
                     </div>
                     <div class="modal-body">
-                        <table class="table basket-table">
+                        <table class="cart-table table table-small">
                             <thead>
-                                <th scope="col">nazwa</th>
-                                <th scope="col">cena brutto</th>
-                                <th scope="col">liczba sztuk</th>
+                                <tr>
+                                    <th class="col-xs-6">nazwa</th>
+                                    <th class="col-xs-4">cena brutto</th>
+                                    <th class="col-xs-2">liczba sztuk</th>
+                                </tr>
                             </thead>
                         </table>
+                        <hr>
+                        <h5>Dostawa</h5>
                         <div class="row">
-                            <div class="col-sm-4 delivery-col">
-                                <button class="btn btn-light delivery-btn">
-                                    Kurier <br>
-                                    <span class="delivery-cost">14,99</span> zł
-                                </button>
+                            <div class="form-check">
+                                <input type="radio" name="delivery" id="post"
+                                    value="9.99" checked>
+                                <label class="form-check-label" for="post">
+                                    <span>Poczta</span>
+                                    <span>9.99</span>
+                                </label>
                             </div>
-                            <div class="col-sm-4 delivery-col">
-                                <button class="btn btn-light delivery-btn">
-                                    Poczta <br>
-                                    <span class="delivery-cost">9,99</span> zł
-                                </button> 
+                            <div class="form-check">
+                                <input type="radio" name="delivery" id="courier"
+                                    value="14.99">
+                                <label class="form-check-label" for="courier">
+                                    <span>Kurier</span>
+                                    <span>14.99</span>
+                                </label>
                             </div>
-                            <div class="col-sm-4 delivery-col">
-                                <button class="btn btn-light delivery-btn">
-                                    Odbiór osobisty <br>
-                                    <span class="delivery-cost">0</span> zł
-                                </button> 
+                            <div class="form-check">
+                                <input type="radio" name="delivery" id="personal"
+                                    value="0">
+                                <label class="form-check-label" for="personal">
+                                    <span>Odbiór osobisty</span>
+                                    <span>0.00</span>
+                                </label>
                             </div>
                         </div>
+                        <hr>
+                            <div class="row">
+                                <div class="col">
+                                    <span>Łącznie do zapłaty</span>
+                                </div>
+                                <div class="col">
+                                    <span class="to-pay"></span>
+                                </div>
+                            </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-dark" data-dismiss="modal">Kup</button>
@@ -98,13 +119,17 @@
                 </div>
                 <div class="col-lg-8 col-md-6">
                     <section id="add-product">
+                        <div class="form-group row">
+                            <label for="inputFile" class=" col-sm-3 col-form-label">Wczytaj produkty z pliku</label>
+                            <input class="col-sm-9" type="file" id="myFile" name="filename">
+                        </div>
                         <h3>Dodaj produkt</h3>
                         <form>
                             <div class="form-group row">
                                 <label for="inputName" class="col-sm-3 col-form-label">Nazwa towaru</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputName" maxlength="10">
-                                    <div class="invalid-feedback name-feedback">
+                                    <div class="invalid-feedback" id="name-feedback">
                                         Proszę wprowadzić same litery.
                                     </div>
                                 </div>
@@ -163,7 +188,7 @@
                             <div class="form-group row">
                                 <div class="col-sm-3">Opcje towaru</div>
                                 <div class="col-sm-9">
-                                    <div class="row">
+                                    <div class="row" id="options">
                                         <div class="col-lg-4">
                                             <input type="checkbox" id="option1" class="option">
                                             <label class="form-check-label" for="option1">
@@ -196,7 +221,7 @@
                                         </div>
                                     </div>
                                     <div class="invalid-feedback option-feedback">
-                                        Proszę wybrać 2 opcje.
+                                        Proszę wybrać minimum 2 opcje.
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +229,7 @@
                                 <div class="row">
                                     <legend class="col-form-label col-sm-3 pt-0">Ocena</legend>
                                     <div class="col-sm-9">
-                                        <div class="row">
+                                        <div class="row" id="rates">
                                             <div class="form-check col">
                                                 <input type="radio" name="rate" id="rate1" class="rate"
                                                     value="1">
@@ -266,9 +291,23 @@
 
                     <section id="product-list">
                         <div class="row">
-                            <div class="col-lg-8 col-md-6">
+                            <div class="col-lg-6 col-md-6">
                                 <h3>Lista produktów</h3>
                             </div>
+                            
+                                <div class="input-group-prepend col-lg-2 col-sm-3">
+                                    <label for="product-list-view">Zmień widok</label>
+                                </div>
+                                <select class="custom-select col-lg-4 col-sm-4" id="product-list-view" required>
+                                    <option selected value="list">Lista</option>
+                                    <option value="gallery">Obrazki</option>
+                                </select>
+                            
+                        </div>
+
+                            
+
+                        <div id="table-div">
                             <div class="col-lg-4 col-md-6">
                                 <select class="custom-select" id="sortSelect" required>
                                     <option selected value="default">Sortuj według</option>
@@ -280,8 +319,7 @@
                                     <option value="nameZ">nazwa od Z</option>
                                 </select>
                             </div>
-
-                        </div>
+                        
 
                         <table class="product-table tablesorter">
                             <thead>
@@ -301,6 +339,11 @@
                             <tbody>
                             </tbody>
                         </table>
+                        </div>
+
+                        <div class="gallery row mdb-lightbox">
+
+                        </div>
 
                     </section>
                 </div>
@@ -326,7 +369,7 @@
 
     <footer class="footer mt-auto py-3">
         <div class="container">
-            <span class="text-muted">Jakiś tam footer</span>
+            <span class="text-muted">Aleksandra Krawiec © 2020</span>
         </div>
     </footer>
 

@@ -11,14 +11,7 @@ main {
       .no-margin {
         margin: auto 0;
       }
-}
 
-.delivery-col {
-  padding: 2px;
-  
-  .delivery-btn {
-    width: 100%;
-  }
 }
 
 
@@ -75,6 +68,11 @@ section {
 #product-list {
   table {
     font-size: 0.9rem;
+    
+    img {
+        width: 75px;
+        height: auto;
+    }
 
     button {
       width: 100%;
@@ -82,10 +80,45 @@ section {
       font-size: 0.7rem;
       padding: 2px;
     }
+
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+    
+    li {
+      list-style-type: none;
+    }
   }
 
-  img {
-      width: 80px;
-      height: auto;
+}
+
+.cart-table {
+  td {
+    padding: 0px 20px;
+  }
+  .numberOfProducts {
+    width: 50px;
+  }
+}
+
+.gallery {
+  padding-top: 20px;
+  display: none;
+  margin: auto;
+  justify-content: center;
+  
+  .gallery-element {
+    width: 90%;
+    padding: 10px;
+    justify-content: center;
+    text-align: center;
+  
+  
+    .img-div {
+      max-width: 120px;
+      height: 120px;
+      margin: auto;
+    }
   }
 }
