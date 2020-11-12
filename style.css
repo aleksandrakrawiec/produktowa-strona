@@ -65,10 +65,11 @@ section {
   padding-top: 20px;
   display: none;
   margin: auto;
-  justify-content: center; }
+  justify-content: left; }
   .gallery .gallery-element {
     width: 90%;
     padding: 10px;
+    border: solid 1px lightgray;
     justify-content: center;
     text-align: center; }
     .gallery .gallery-element .img-div {

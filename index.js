@@ -18,7 +18,8 @@ var deleteButtons = document.querySelectorAll(".button-delete");
 var addToCartButtons = document.querySelectorAll(".button-add-to-cart");
 var editButtons = document.querySelectorAll(".button-edit");
 var editRowIndex = null;
-var modalInputs = document.querySelectorAll(".modal input");
+var deliveryOptions = document.querySelectorAll('input[name="delivery"]');
+
 
 var validationMap = new Map([
   ["name", false],
@@ -36,10 +37,26 @@ if (window.localStorage.getItem("cartProducts") != null) {
   cartProducts.forEach(addToCart);
 }
 
+if(window.localStorage.getItem("delivery") != null) {
+  document.getElementById(window.localStorage.getItem("delivery")).checked = true;
+}
+
+
 var price = null;
 var vat = null;
 
 var sortSelect = document.querySelector("#sortSelect");
+
+
+// zmiana dostawy
+for(option of deliveryOptions) {
+  option.addEventListener("change", function() {
+    if(this.checked === true) {
+      window.localStorage.setItem("delivery", this.getAttribute("id"));
+    }
+    calculateTotalSum();
+  })
+}
 
 
 document.querySelector(".modal-footer button").addEventListener("click", function() {
@@ -49,6 +66,7 @@ document.querySelector(".modal-footer button").addEventListener("click", functio
     cartTable.deleteRow(1);
   }
   cartProducts = [];
+  calculateTotalSum();
   window.localStorage.clear();
   document.querySelector('#post').checked = true;
   alert("Dziękujemy za zakupy. Zapraszamy ponownie.");
@@ -68,33 +86,7 @@ document.querySelector("#product-list-view").addEventListener("change", function
 
 })
 
-// var product = {
-//   photo: "product-photo.jpg",
-//   name: "Fotel",
-//   code: "12-34",
-//   price: 240.0,
-//   vat: 23,
-//   priceBrutto: (240 * (1 + 23 / 100)).toFixed(2),
-//   category: "Kategoria 1",
-//   options: ["Opcja 2", "Opcja 4"],
-//   rate: "3",
-// };
 
-// addRow(product);
-
-// product = {
-//   photo: "product-photo.jpg",
-//   name: "Kanapa",
-//   code: "21-34",
-//   price: 1200.0,
-//   vat: 18,
-//   priceBrutto: (1200 * (1 + 18 / 100)).toFixed(2),
-//   category: "Kategoria 3",
-//   options: ["Opcja 1", "Opcja 3", "Opcja 4"],
-//   rate: "5",
-// };
-
-// addRow(product);
 
 const input = document.querySelector("#myFile");
 input.addEventListener("change", function() {
@@ -192,7 +184,7 @@ inputPrice.addEventListener("blur", function () {
       feedbaackDiv.innerText = "Proszę wprowadzić liczbę";
       this.classList.add("is-invalid");
     } else {
-      this.value = parseInt(this.value).toFixed(2); // coś tu chyba jest nie tak, bo pokazuje jedną po przecinku
+      this.value = parseFloat(this.value).toFixed(2); // coś tu chyba jest nie tak, bo pokazuje jedną po przecinku
       this.classList.remove("is-invalid");
       this.classList.add("is-valid");
       isPriceCorrect = true;
@@ -428,12 +420,23 @@ function addRow(product) {
         numberOfitems: 1,
       };
 
+      if(cartProducts.find(element => element.name === cartProduct.name)) {
+        var found = cartProducts.find(element => element.name === cartProduct.name);
+        found.numberOfitems ++;
+        var cartRows = document.querySelector(".cart-table").rows;
+        for(var i=1; i<cartRows.length; i++) {
+          if(cartRows[i].cells[0].innerText === cartProduct.name) {
+            var prevItemCount = cartRows[i].cells[2].firstElementChild.getAttribute("value");
+            cartRows[i].cells[2].firstElementChild.setAttribute("value", parseInt(prevItemCount) + 1);
+          }
+        }
+      }
+      else {
+        cartProducts.push(cartProduct);
+        addToCart(cartProduct);
+      }
       
-      cartProducts.push(cartProduct);
-
       window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
-
-      addToCart(cartProduct);
 
       alert("Przedmiot zostal dodany do koszyka.");
     }
@@ -553,21 +556,29 @@ function addToCart(product) {
     product.name +
     "</td><td class='cart-price-brutto'>" +
     product.price +
-    "</td><td><input type='number' value =" + product.numberOfitems + " class='numberOfProducts'></td>";
+    "</td><td><input type='number' min='0' value =" + product.numberOfitems + " class='numberOfProducts'></td>";
   document.querySelector(".cart-table").appendChild(newRow);
   calculateTotalSum();
 
-  modalInputs = document.querySelectorAll(".modal input");
+  productCountInputs = document.querySelectorAll(".modal input.numberOfProducts");
 
-  for(var i=0; i<modalInputs.length; i++) {
-    modalInputs[i].addEventListener("change", function(){
+  for(var i=0; i<productCountInputs.length; i++) {
+    productCountInputs[i].addEventListener("change", function(){
+      // zmiana liczby sztuk
+        if(this.value < 0) {
+          this.value = 1;
+          alert("Wprowadzono nieprawidłową liczbę sztuk. Liczba sztuk została automatycznie ustawiona na 1");
+        }
+        var itemIndex = this.closest("tr").rowIndex;
+        var itemName = document.querySelector(".cart-table").rows[itemIndex].cells[0].innerText;
+        cartProducts.find(element => element.name === itemName).numberOfitems = parseInt(this.value);
+        window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
       calculateTotalSum();
-    })
+    });
   }
-
 }
 
-function editRow(product) { // dodać tu edytowanie w galerii
+function editRow(product) {
   var options = document.createElement("ul");
   for (var item of product.options) {
     var element = document.createElement("li");
@@ -590,26 +601,30 @@ function editRow(product) { // dodać tu edytowanie w galerii
   table.rows[editRowIndex].cells[7].innerHTML = options.outerHTML;
   table.rows[editRowIndex].cells[8].innerText = product.rate;
 
-  var galleryProduct = document.querySelectorAll(".gallery figure")[editRowIndex-1];
+  var galleryProduct = document.querySelectorAll(".gallery > div")[editRowIndex-1];
   galleryProduct.innerHTML = "<div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
   product.name +"</h5>" + product.price + " zł (" + product.priceBrutto + " zł)";
 }
 
 function calculateTotalSum() {
-  var toPay = parseFloat(document.querySelector('input[name="delivery"]:checked').value);
-  var numbersOfProducts = document.querySelectorAll(".modal td input");
-  for(var j=0; j<numbersOfProducts.length; j++) {
-    toPay += parseFloat(numbersOfProducts[j].value) * parseFloat(document.querySelector(".cart-table").rows[j+1].cells[1].innerText);
+  if(cartProducts.length === 0) {
+    document.querySelector(".to-pay").innerText = parseFloat("0").toFixed(2);
   }
-  document.querySelector(".to-pay").innerText = toPay.toFixed(2);
+  else {
+    var toPay = parseFloat(document.querySelector('input[name="delivery"]:checked').value);
+    var numbersOfProducts = document.querySelectorAll(".modal td input");
+    for(var j=0; j<numbersOfProducts.length; j++) {
+      toPay += parseFloat(numbersOfProducts[j].value) * parseFloat(document.querySelector(".cart-table").rows[j+1].cells[1].innerText);
+    }
+    document.querySelector(".to-pay").innerText = toPay.toFixed(2);
+  }
 }
 
 function addToGallery(product) {
-  var newElement = document.createElement("figure");
+  var newElement = document.createElement("div");
   newElement.classList.add("col-md-3");
   newElement.classList.add("col-sm-4");
   newElement.classList.add("col-xs-6");
-  newElement.classList.add("img-thumbnail");
   newElement.classList.add("gallery-element");
   newElement.innerHTML = "<div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
   product.name +"</h5>" + product.price + " zł (" + product.priceBrutto + " zł)";
