@@ -1,6 +1,6 @@
 const lettersOnlyExpression = /^[A-Za-zĄąĆćĘęŁłÓóŻżŻż]+$/;
 const numbersOnlyExpression = /^[0-9]{1,}$/;
-const moneyExpression = /^[0-9]{1,}\.[0-9]{1,2}$/;
+const moneyExpression = /^[0-9]{1,}\.{0,1}[0-9]{0,2}$/;
 const productCodeExpression = /^[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}-[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}$/;
 
 var addButton = document.querySelector(".add-btn");
@@ -20,16 +20,6 @@ var editButtons = document.querySelectorAll(".button-edit");
 var editRowIndex = null;
 var deliveryOptions = document.querySelectorAll('input[name="delivery"]');
 
-
-var validationMap = new Map([
-  ["name", false],
-  ["code", false],
-  ["price", false],
-  ["vat", false],
-  ["category", false],
-  ["option", false],
-  ["rate", false],
-]);
 
 var cartProducts = [];
 if (window.localStorage.getItem("cartProducts") != null) {
@@ -58,7 +48,7 @@ for(option of deliveryOptions) {
   })
 }
 
-
+// kup
 document.querySelector(".modal-footer button").addEventListener("click", function() {
   var cartTable = document.querySelector(".cart-table");
   var length = cartTable.rows.length;
@@ -73,7 +63,7 @@ document.querySelector(".modal-footer button").addEventListener("click", functio
 
 })
 
-
+//zmiana widoku
 document.querySelector("#product-list-view").addEventListener("change", function() {
   if(this.value === "list") {
     document.querySelector("#table-div").style.display = "initial";
@@ -81,13 +71,13 @@ document.querySelector("#product-list-view").addEventListener("change", function
   }
   else {
     document.querySelector("#table-div").style.display = "none";
-    document.querySelector(".gallery").style.display = "inline-flex";
+    document.querySelector(".gallery").style.display = "flex";
   }
 
 })
 
 
-
+//wczytanie jsona
 const input = document.querySelector("#myFile");
 input.addEventListener("change", function() {
   const reader = new FileReader();
@@ -102,7 +92,7 @@ input.addEventListener("change", function() {
   reader.readAsText(input.files[0]);
 }, false);
 
-
+//ustawienia tablesortera
 $(function () {
   $(".product-table").tablesorter({
     theme: "ice",
@@ -122,161 +112,46 @@ $(function () {
   });
 });
 
-// VALIDATION
+// walidacja listenery
 
 inputName.addEventListener("blur", function () {
-  var text = this.value;
-  var result = lettersOnlyExpression.test(text);
-  var feedbaackDiv = document.querySelector("#name-feedback");
-  var isNameValid = false;
-  if (text === "")  {
-    feedbaackDiv.innerText = "Pole obowiązkowe"
-    this.classList.add("is-invalid");
-  }
-  else if (result == false) {
-    feedbaackDiv.innerText = "Proszę wprowadzić same litery"
-    this.classList.add("is-invalid");
-  }
-  else {
-    this.classList.remove("is-invalid");
-    this.classList.add("is-valid");
-    isNameValid = true;
-  }
-
-  validationMap.set("name", isNameValid);
+  isNameValid();
 });
 
 inputCode.addEventListener("blur", function () {
-  var text = this.value;
-  var result = productCodeExpression.test(text);
-  var feedbaackDiv = document.querySelector("#code-feedback");
-  var isCodeValid = false;
-  if (text === "")  {
-    feedbaackDiv.innerText = "Pole obowiązkowe"
-    this.classList.add("is-invalid");
-  }
-  else if (result == false) {
-    feedbaackDiv.innerText = "Proszę wprowadzić kod w formacie XX-XX."
-    this.classList.add("is-invalid");
-  }
-  else {
-    this.classList.remove("is-invalid");
-    this.classList.add("is-valid");
-    isCodeValid = true;
-  }
-
-  validationMap.set("code", isCodeValid);
+  isCodeValid();
 });
 
 inputPrice.addEventListener("blur", function () {
-  var text = this.value;
-  var isPriceCorrect = false;
-  var feedbaackDiv = document.querySelector("#price-feedback");
-  var isCodeValid = false;
-  var result = moneyExpression.test(text);
-  if(text === "") {
-    feedbaackDiv.innerText = "Pole obowiązkowe";
-    this.classList.add("is-invalid");
-  }
-  else if (result == false) {
-    result = numbersOnlyExpression.test(text);
-    if (result == false) {
-      feedbaackDiv.innerText = "Proszę wprowadzić liczbę";
-      this.classList.add("is-invalid");
-    } else {
-      this.value = parseFloat(this.value).toFixed(2); // coś tu chyba jest nie tak, bo pokazuje jedną po przecinku
-      this.classList.remove("is-invalid");
-      this.classList.add("is-valid");
-      isPriceCorrect = true;
-      price = this.value;
-      if (vat != null) {
-        inputPriceBrutto.value = (price * (1 + vat / 100)).toFixed(2); // toFixed - round to n decimal places
-      }
-    }
-  } else {
-    this.classList.remove("is-invalid");
-    this.classList.add("is-valid");
-    isPriceCorrect = true;
-    price = this.value;
+  if(isPriceValid() === 0) {
     if (vat != null) {
       inputPriceBrutto.value = (price * (1 + vat / 100)).toFixed(2);
     }
   }
-
-  validationMap.set("price", isPriceCorrect);
 });
 
 inputVAT.addEventListener("blur", function () {
-  var text = this.value;
-  var isVATCorrect = false;
-  var result = numbersOnlyExpression.test(text);
-  var feedbaackDiv = document.querySelector("#vat-feedback");
-
-  if (text === "")  {
-    feedbaackDiv.innerText = "Pole obowiązkowe"
-    this.classList.add("is-invalid");
-  }
-  else if (result == false) {
-    feedbaackDiv.innerText = "Proszę wprowadzić liczbę"
-    this.classList.add("is-invalid");
-  }
-  else {
-    vat = this.value;
-    isVATCorrect = true;
-    this.classList.remove("is-invalid");
-    this.classList.add("is-valid");
+  if(isVATValid() === 0) {
     if (price != null) {
       inputPriceBrutto.value = (price * (1 + vat / 100)).toFixed(2);
     }
   }
-  validationMap.set("vat", isVATCorrect);
 });
 
 inputCategory.addEventListener("blur", function () {
-  var isCategoryCorrect;
-  if (this.value == "default") {
-    inputCategory.classList.add("is-invalid");
-    isCategoryCorrect = false;
-  } else {
-    inputCategory.classList.remove("is-invalid");
-    inputCategory.classList.add("is-valid");
-    isCategoryCorrect = true;
-  }
-  validationMap.set("category", isCategoryCorrect);
+  isCategoryValid();
 });
 
 for (var i = 0; i < options.length; i++) {
   var isOptionCorrect;
   options[i].addEventListener("change", function () {
-    var checkedOptions = document.querySelectorAll(".option:checked").length;
-
-    if (checkedOptions >= 2) {
-      document.querySelector(".option-feedback").style.display = "none";
-      isOptionCorrect = true;
-    } else {
-      document.querySelector(".option-feedback").style.display = "block";
-      isOptionCorrect = false;
-    }
-    validationMap.set("option", isOptionCorrect);
-  });
-}
-
-for (var i = 0; i < rates.length; i++) {
-  rates[i].addEventListener("change", function () {
-    validationMap.set("rate", true);
-    document.querySelector(".rate-feedback").style.display = "none";
+    isOptionsValid();
   });
 }
 
 //adding new product
 addButton.addEventListener("click", function () {
-  if (!validationMap.get("rate")) {
-    document.querySelector(".rate-feedback").style.display = "block";
-    document.querySelector(".add-feedback").style.display = "block";
-  } else {
-    document.querySelector(".rate-feedback").style.display = "none";
-  }
-  if (!validationMap.get("option")) {
+  if (isOptionsValid !== 0) {  // 0 - valid, 1 - invalid
     document.querySelector(".option-feedback").style.display = "block";
     document.querySelector(".add-feedback").style.display = "block";
   } else {
@@ -328,31 +203,18 @@ addButton.addEventListener("click", function () {
 });
 
 
-
-
-// FUNCTIONS
-
-//validadion
-function testExpression(input, expression) {
-  var text = input.value;
-  var result = expression.test(text);
-  if (result == false) {
-    input.classList.add("is-invalid");
+function isProductValid() {
+  if(isNameValid() + isCodeValid() + isPriceValid() + isVATValid() + isCategoryValid() + isOptionsValid() != 0){
+    console.log("Produkt nieprawidlowy");
     return false;
-  } else {
-    input.classList.remove("is-invalid");
-    input.classList.add("is-valid");
+  }
+  else if(editRowIndex>0) {
     return true;
   }
-}
-
-function isProductValid() {
-  for (var [key, value] of validationMap) {
-    if (value === false) {
-      return false;
-    }
+  else {
+    console.log("Produkt prawidlowy");
+    return true;
   }
-  return true;
 }
 
 //add row
@@ -402,6 +264,8 @@ function addRow(product) {
     function () {
       var rowNumber = this.closest("tr").rowIndex;
       document.querySelector(".product-table").deleteRow(rowNumber);
+      var galleryElement = document.querySelectorAll(".gallery>div")[rowNumber - 1];
+      galleryElement.remove();
       alert("Usunięto produkt.");
     }
   );
@@ -490,15 +354,19 @@ function addRow(product) {
     editRowIndex = index;
     addButton.innerText = "Edytuj";
 
-    for (var [key, value] of validationMap) {
-      validationMap.set(key, true);
-    }
-
+    // wyczyszczenie invalid messages jeśli były
     var inputs = document.querySelectorAll("form input");
     for (var i = 0; i < inputs.length; i++) {
       inputs[i].classList.remove("is-invalid");
       inputs[i].classList.add("is-valid");
     }
+    inputCategory.classList.remove("is-invalid");
+    inputCategory.classList.add("is-valid");
+
+    document.querySelector(".option-feedback").style.display = "none";
+
+    document.querySelector(".add-feedback").style.display = "none";
+
   });
 
   return false;
@@ -531,10 +399,6 @@ function resetForm() {
   inputCategory.classList.remove("is-valid");
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].classList.remove("is-valid");
-  }
-
-  for (var [key, value] of validationMap) {
-    validationMap.set(key, false);
   }
 }
 

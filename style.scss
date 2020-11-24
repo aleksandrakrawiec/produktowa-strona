@@ -67,10 +67,10 @@ section {
 
 #product-list {
   table {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     
     img {
-        width: 75px;
+        width: 60px;
         height: auto;
     }
 
@@ -102,11 +102,16 @@ section {
   }
 }
 
+
 .gallery {
   padding-top: 20px;
   display: none;
   margin: auto;
   justify-content: left;
+
+  h5 {
+    font-size: 1.1rem;
+  }
   
   .gallery-element {
     width: 90%;

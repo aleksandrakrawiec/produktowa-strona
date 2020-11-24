@@ -129,7 +129,8 @@
                                 <label for="inputName" class="col-sm-3 col-form-label">Nazwa towaru</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputName" maxlength="10">
-                                    <div class="invalid-feedback" id="name-feedback"> 
+                                    <div class="invalid-feedback" id="name-feedback">
+                                        Pole obowiązkowe 
                                     </div>
                                 </div>
                             </div>
@@ -138,6 +139,7 @@
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputCode" maxlength="5"">
                                     <div class="invalid-feedback" id="code-feedback">
+                                        Pole obowiązkowe
                                     </div>
                                 </div>
                             </div>
@@ -147,6 +149,7 @@
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="inputPrice">
                                     <div class="invalid-feedback" id="price-feedback">
+                                        Pole obowiązkowe
                                     </div>
                                 </div>
                             </div>
@@ -243,7 +246,7 @@
                                             </div>
                                             <div class="form-check col">
                                                 <input type="radio" name="rate" id="rate3" class="rate"
-                                                    value="3">
+                                                    value="3" checked>
                                                 <label class="form-check-label" for="rate3">
                                                     3
                                                 </label>
@@ -371,6 +374,7 @@
     </footer>
 
     <script src="index.js" charset="utf-8"></script>
+    <script src="validation-functions.js" charset="utf-8"></script>
 
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
