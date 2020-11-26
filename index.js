@@ -76,7 +76,6 @@ document.querySelector("#product-list-view").addEventListener("change", function
 
 })
 
-
 //wczytanie jsona
 const input = document.querySelector("#myFile");
 input.addEventListener("change", function() {
@@ -159,7 +158,7 @@ addButton.addEventListener("click", function () {
   }
 
   if (isProductValid()) {
-    if (isProductUnique() || editRowIndex !== null) {
+    if (isProductUnique()) {
       var optionList = document.querySelectorAll(".option:checked+label");
 
       var options = [];
@@ -193,9 +192,7 @@ addButton.addEventListener("click", function () {
       resetForm();
       document.querySelector(".add-feedback").style.display = "none";
     } else {
-      if (editRowIndex === null) {
         alert("Produkt o podanej nazwie już istnieje.");
-      }
     }
   } else {
     document.querySelector(".add-feedback").style.display = "block";
@@ -407,7 +404,14 @@ function isProductUnique() {
   var names = document.querySelectorAll(".name");
   for (var i = 0; i < names.length; i++) {
     if (names[i].innerText === inputName.value) {
-      return false;
+      if(editRowIndex !== null) {
+        if(i !== editRowIndex) {
+          return false;
+        }
+      }
+      else {
+        return false;
+      }
     }
   }
   return true;
