@@ -14,7 +14,6 @@ main {
 
 }
 
-
 .footer {
   background-color: #f5f5f5;
   position: fixed;
@@ -99,6 +98,11 @@ section {
   }
   .numberOfProducts {
     width: 50px;
+  }
+
+  .delete {
+    margin: 4px;
+    padding: 2px 8px;
   }
 }
 

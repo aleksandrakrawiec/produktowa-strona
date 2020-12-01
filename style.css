@@ -60,6 +60,9 @@ section {
   padding: 0px 20px; }
 .cart-table .numberOfProducts {
   width: 50px; }
+.cart-table .delete {
+  margin: 4px;
+  padding: 2px 8px; }
 
 .gallery {
   padding-top: 20px;

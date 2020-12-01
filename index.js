@@ -60,7 +60,7 @@ document.querySelector(".modal-footer button").addEventListener("click", functio
   window.localStorage.clear();
   document.querySelector('#post').checked = true;
   alert("Dziękujemy za zakupy. Zapraszamy ponownie.");
-
+  
 })
 
 //zmiana widoku
@@ -180,6 +180,8 @@ addButton.addEventListener("click", function () {
 
       if (editRowIndex !== null) {
         editRow(product);
+        resort = true;
+        $('.product-table').tablesorter().trigger('update', resort);
         alert("Uaktualniono produkt");
         editRowIndex = null;
         addButton.innerText = "Dodaj";
@@ -263,6 +265,8 @@ function addRow(product) {
       document.querySelector(".product-table").deleteRow(rowNumber);
       var galleryElement = document.querySelectorAll(".gallery>div")[rowNumber - 1];
       galleryElement.remove();
+      resort = true;
+      $('.product-table').tablesorter().trigger('update', resort);
       alert("Usunięto produkt.");
     }
   );
@@ -424,25 +428,40 @@ function addToCart(product) {
     product.name +
     "</td><td class='cart-price-brutto'>" +
     product.price +
-    "</td><td><input type='number' min='0' value =" + product.numberOfitems + " class='numberOfProducts'></td>";
+    "</td><td><input type='number' min='0' value =" + product.numberOfitems + " class='numberOfProducts'><button class='delete'>x</button></button></td>";
   document.querySelector(".cart-table").appendChild(newRow);
   calculateTotalSum();
 
   productCountInputs = document.querySelectorAll(".modal input.numberOfProducts");
 
+  
   for(var i=0; i<productCountInputs.length; i++) {
     productCountInputs[i].addEventListener("change", function(){
       // zmiana liczby sztuk
-        if(this.value < 0) {
-          this.value = 1;
-          alert("Wprowadzono nieprawidłową liczbę sztuk. Liczba sztuk została automatycznie ustawiona na 1");
-        }
-        var itemIndex = this.closest("tr").rowIndex;
-        var itemName = document.querySelector(".cart-table").rows[itemIndex].cells[0].innerText;
-        cartProducts.find(element => element.name === itemName).numberOfitems = parseInt(this.value);
-        window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+      if(this.value < 0) {
+        this.value = 1;
+        alert("Wprowadzono nieprawidłową liczbę sztuk. Liczba sztuk została automatycznie ustawiona na 1");
+      }
+      var itemIndex = this.closest("tr").rowIndex;
+      var itemName = document.querySelector(".cart-table").rows[itemIndex].cells[0].innerText;
+      cartProducts.find(element => element.name === itemName).numberOfitems = parseInt(this.value);
+      window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
       calculateTotalSum();
-    });
+    });  
+  }
+  
+  deleteFromCartButtons = document.querySelectorAll(".cart-table .delete");
+  for(var i=0; i<deleteFromCartButtons.length; i++) {
+    deleteFromCartButtons[i].addEventListener("click", function() {
+      // usuwanie produktu z koszyka
+      var itemIndex = this.closest("tr").rowIndex;
+      var rowToDelete = document.querySelector(".cart-table").rows[itemIndex];
+      cartProducts.splice(itemIndex-1,1);
+      document.querySelector(".cart-table").removeChild(rowToDelete);
+      calculateTotalSum();
+      window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts)); 
+      // WAŻNE zeby jeszcze przetestować bo nie jestem pewna czy działa w 100%
+    })
   }
 }
 
@@ -470,8 +489,7 @@ function editRow(product) {
   table.rows[editRowIndex].cells[8].innerText = product.rate;
 
   var galleryProduct = document.querySelectorAll(".gallery > div")[editRowIndex-1];
-  galleryProduct.innerHTML = "<div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
-  product.name +"</h5>" + product.price + " zł (" + product.priceBrutto + " zł)";
+  galleryProduct.innerHTML = `<div class='img-div'><img class='img-fluid' src='${product.photo}'></div><h5>${product.name}</h5><span>${product.price} zł (${product.priceBrutto} zł)</span>`;
 }
 
 function calculateTotalSum() {
