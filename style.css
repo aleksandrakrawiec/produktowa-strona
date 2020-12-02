@@ -81,5 +81,8 @@ section {
       max-width: 120px;
       height: 120px;
       margin: auto; }
+    .gallery .gallery-element button {
+      margin: 2px;
+      font-size: 0.7rem; }
 
 /*# sourceMappingURL=style.css.map */

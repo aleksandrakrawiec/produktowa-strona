@@ -1,4 +1,4 @@
-const lettersOnlyExpression = /^[A-Za-zĄąĆćĘęŁłÓóŻżŻż]+$/;
+const lettersOnlyExpression = /^[A-Za-zĄąĆćĘęŁłÓóŻżŻż" "]+$/;
 const numbersOnlyExpression = /^[0-9]{1,}$/;
 const moneyExpression = /^[0-9]{1,}\.{0,1}[0-9]{0,2}$/;
 const productCodeExpression = /^[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}-[a-zA-Z0-9A-Za-zĄąĆćĘęŁłÓóŻżŻż]{2}$/;
@@ -14,9 +14,9 @@ var inputCategory = document.querySelector("#inputCategory");
 var options = document.querySelectorAll(".option");
 var rates = document.querySelectorAll(".rate");
 var inputImage = document.querySelector("#inputPhoto");
-var deleteButtons = document.querySelectorAll(".button-delete");
-var addToCartButtons = document.querySelectorAll(".button-add-to-cart");
-var editButtons = document.querySelectorAll(".button-edit");
+//var deleteButtons = document.querySelectorAll(".button-delete");
+//var addToCartButtons = document.querySelectorAll(".button-add-to-cart");
+//var editButtons = document.querySelectorAll(".button-edit");
 var editRowIndex = null;
 var deliveryOptions = document.querySelectorAll('input[name="delivery"]');
 
@@ -262,12 +262,7 @@ function addRow(product) {
     "click",
     function () {
       var rowNumber = this.closest("tr").rowIndex;
-      document.querySelector(".product-table").deleteRow(rowNumber);
-      var galleryElement = document.querySelectorAll(".gallery>div")[rowNumber - 1];
-      galleryElement.remove();
-      resort = true;
-      $('.product-table').tablesorter().trigger('update', resort);
-      alert("Usunięto produkt.");
+      deleteElement(rowNumber);
     }
   );
 
@@ -277,33 +272,7 @@ function addRow(product) {
     "click",
     function () {
       var index = this.closest("tr").rowIndex;
-      var cartProduct = {
-        name: document.querySelector(".product-table").rows[index].cells[1]
-          .innerText,
-        price: document.querySelector(".product-table").rows[index].cells[5]
-          .innerText,
-        numberOfitems: 1,
-      };
-
-      if(cartProducts.find(element => element.name === cartProduct.name)) {
-        var found = cartProducts.find(element => element.name === cartProduct.name);
-        found.numberOfitems ++;
-        var cartRows = document.querySelector(".cart-table").rows;
-        for(var i=1; i<cartRows.length; i++) {
-          if(cartRows[i].cells[0].innerText === cartProduct.name) {
-            var prevItemCount = cartRows[i].cells[2].firstElementChild.getAttribute("value");
-            cartRows[i].cells[2].firstElementChild.setAttribute("value", parseInt(prevItemCount) + 1);
-          }
-        }
-      }
-      else {
-        cartProducts.push(cartProduct);
-        addToCart(cartProduct);
-      }
-      
-      window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
-
-      alert("Przedmiot zostal dodany do koszyka.");
+      addElementToCart(index);
     }
   );
 
@@ -311,62 +280,8 @@ function addRow(product) {
 
   editButtons[editButtons.length - 1].addEventListener("click", function () {
     resetForm();
-
     var index = this.closest("tr").rowIndex;
-    var table = document.querySelector(".product-table");
-    inputPhoto.value = table.rows[
-      index
-    ].cells[0].firstElementChild.getAttribute("src");
-    inputName.value = table.rows[index].cells[1].innerText;
-    inputCode.value = table.rows[index].cells[2].innerText;
-    inputPrice.value = table.rows[index].cells[3].innerText;
-    inputVAT.value = table.rows[index].cells[4].innerText;
-    inputPriceBrutto.value = table.rows[index].cells[5].innerText;
-    inputCategory.value = table.rows[index].cells[6].innerText;
-    vat = inputVAT.value;
-    price = inputPrice.value;
-
-    var options = [];
-    var liElements = table.rows[index].cells[7].firstElementChild.children;
-
-    for (element of liElements) {
-      options.push(element.innerText);
-    }
-
-    var labels = document.querySelectorAll("#options label");
-
-    for (element of options) {
-      for (label of labels) {
-        if (element === label.innerText) {
-          label.parentElement.firstElementChild.checked = true;
-        }
-      }
-    }
-
-    var rate = table.rows[index].cells[8].innerText;
-
-    var radioButtons = document.querySelectorAll("#rates input");
-
-    for (element of radioButtons) {
-      if (element.value === rate) {
-        element.checked = true;
-      }
-    }
-    editRowIndex = index;
-    addButton.innerText = "Edytuj";
-
-    // wyczyszczenie invalid messages jeśli były
-    var inputs = document.querySelectorAll("form input");
-    for (var i = 0; i < inputs.length; i++) {
-      inputs[i].classList.remove("is-invalid");
-      inputs[i].classList.add("is-valid");
-    }
-    inputCategory.classList.remove("is-invalid");
-    inputCategory.classList.add("is-valid");
-
-    document.querySelector(".option-feedback").style.display = "none";
-
-    document.querySelector(".add-feedback").style.display = "none";
+    editElementOnClick(index);
 
   });
 
@@ -488,7 +403,7 @@ function editRow(product) {
   table.rows[editRowIndex].cells[7].innerHTML = options.outerHTML;
   table.rows[editRowIndex].cells[8].innerText = product.rate;
 
-  var galleryProduct = document.querySelectorAll(".gallery > div")[editRowIndex-1];
+  var galleryProduct = document.querySelectorAll(".gallery .gallery-info")[editRowIndex-1];
   galleryProduct.innerHTML = `<div class='img-div'><img class='img-fluid' src='${product.photo}'></div><h5>${product.name}</h5><span>${product.price} zł (${product.priceBrutto} zł)</span>`;
 }
 
@@ -512,7 +427,157 @@ function addToGallery(product) {
   newElement.classList.add("col-sm-4");
   newElement.classList.add("col-xs-6");
   newElement.classList.add("gallery-element");
-  newElement.innerHTML = "<div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
-  product.name +"</h5>" + product.price + " zł (" + product.priceBrutto + " zł)";
+  newElement.innerHTML = "<div class='gallery-info'><div class='img-div'><img class='img-fluid' src='" + product.photo + "'></div><h5>" + 
+  product.name +"</h5><span>"+ product.price + " zł (" + product.priceBrutto + " zł)</span></div>" +
+    "<div><button class='btn btn-small btn-dark button-edit-g'>Edytuj</button>" +
+    "<button class='btn btn-small btn-dark button-delete-g'>Usuń</button>" +
+    "<button class='btn btn-small btn-dark button-add-to-cart-g'>Dodaj do koszyka</button></div>";
   document.querySelector("#product-list .gallery").appendChild(newElement);
+
+  deleteButtons = document.querySelectorAll(".button-delete-g");
+
+  deleteButtons[deleteButtons.length - 1].addEventListener(
+    "click",
+    function () {
+      var rowNumber;
+      var name = this.parentElement.parentElement.children[0].children[1].innerText;
+      var productTableRows = document.querySelectorAll(".product-table tr");
+      for(var i=0; i<productTableRows.length; i++) {
+        if(productTableRows[i].cells[1].innerText === name) {
+          rowNumber = i;
+        }
+      }
+      deleteElement(rowNumber);
+    })
+
+  addToCartButtons = document.querySelectorAll(".button-add-to-cart-g");
+
+  addToCartButtons[addToCartButtons.length - 1].addEventListener(
+    "click",
+    function () {
+      var rowNumber;
+      var name = this.parentElement.parentElement.children[0].children[1].innerText;
+      var productTableRows = document.querySelectorAll(".product-table tr");
+      for(var i=0; i<productTableRows.length; i++) {
+        if(productTableRows[i].cells[1].innerText === name) {
+          rowNumber = i;
+        }
+      }
+      addElementToCart(rowNumber);
+    }
+  );
+
+  editButtons = document.querySelectorAll(".button-edit-g");
+
+  editButtons[editButtons.length - 1].addEventListener("click", function () {
+    resetForm();
+    var rowNumber;
+      var name = this.parentElement.parentElement.children[0].children[1].innerText;
+      var productTableRows = document.querySelectorAll(".product-table tr");
+      for(var i=0; i<productTableRows.length; i++) {
+        if(productTableRows[i].cells[1].innerText === name) {
+          rowNumber = i;
+        }
+      }
+    editElementOnClick(rowNumber);
+
+  });
+}
+
+function deleteElement(rowNumber) {
+  document.querySelector(".product-table").deleteRow(rowNumber);
+  var galleryElement = document.querySelectorAll(".gallery>div")[rowNumber - 1];
+  galleryElement.remove();
+  resort = true;
+  $('.product-table').tablesorter().trigger('update', resort);
+  alert("Usunięto produkt.");
+}
+
+function addElementToCart(index) {
+  var cartProduct = {
+    name: document.querySelector(".product-table").rows[index].cells[1]
+      .innerText,
+    price: document.querySelector(".product-table").rows[index].cells[5]
+      .innerText,
+    numberOfitems: 1,
+  };
+
+  if(cartProducts.find(element => element.name === cartProduct.name)) {
+    var found = cartProducts.find(element => element.name === cartProduct.name);
+    found.numberOfitems ++;
+    var cartRows = document.querySelector(".cart-table").rows;
+    for(var i=1; i<cartRows.length; i++) {
+      if(cartRows[i].cells[0].innerText === cartProduct.name) {
+        var prevItemCount = cartRows[i].cells[2].firstElementChild.getAttribute("value");
+        cartRows[i].cells[2].firstElementChild.setAttribute("value", parseInt(prevItemCount) + 1);
+      }
+    }
+  }
+  else {
+    cartProducts.push(cartProduct);
+    addToCart(cartProduct);
+  }
+  
+  window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+
+  alert("Przedmiot zostal dodany do koszyka.");
+}
+
+
+function editElementOnClick(index) {
+  
+  var table = document.querySelector(".product-table");
+  inputPhoto.value = table.rows[
+    index
+  ].cells[0].firstElementChild.getAttribute("src");
+  inputName.value = table.rows[index].cells[1].innerText;
+  inputCode.value = table.rows[index].cells[2].innerText;
+  inputPrice.value = table.rows[index].cells[3].innerText;
+  inputVAT.value = table.rows[index].cells[4].innerText;
+  inputPriceBrutto.value = table.rows[index].cells[5].innerText;
+  inputCategory.value = table.rows[index].cells[6].innerText;
+  vat = inputVAT.value;
+  price = inputPrice.value;
+
+  var options = [];
+  var liElements = table.rows[index].cells[7].firstElementChild.children;
+
+  for (element of liElements) {
+    options.push(element.innerText);
+  }
+
+  var labels = document.querySelectorAll("#options label");
+
+  for (element of options) {
+    for (label of labels) {
+      if (element === label.innerText) {
+        label.parentElement.firstElementChild.checked = true;
+      }
+    }
+  }
+
+  var rate = table.rows[index].cells[8].innerText;
+
+  var radioButtons = document.querySelectorAll("#rates input");
+
+  for (element of radioButtons) {
+    if (element.value === rate) {
+      element.checked = true;
+    }
+  }
+  editRowIndex = index;
+  addButton.innerText = "Edytuj";
+
+  // wyczyszczenie invalid messages jeśli były
+  var inputs = document.querySelectorAll("form input");
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].classList.remove("is-invalid");
+    inputs[i].classList.add("is-valid");
+  }
+  inputCategory.classList.remove("is-invalid");
+  inputCategory.classList.add("is-valid");
+
+  document.querySelector(".option-feedback").style.display = "none";
+
+  document.querySelector(".add-feedback").style.display = "none";
 }
