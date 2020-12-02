@@ -59,7 +59,8 @@ document.querySelector(".modal-footer button").addEventListener("click", functio
   calculateTotalSum();
   window.localStorage.clear();
   document.querySelector('#post').checked = true;
-  alert("Dziękujemy za zakupy. Zapraszamy ponownie.");
+  showToast("Dziękujemy za zakupy. Zapraszamy ponownie.");
+  //alert("Dziękujemy za zakupy. Zapraszamy ponownie.");
   
 })
 
@@ -182,19 +183,22 @@ addButton.addEventListener("click", function () {
         editRow(product);
         resort = true;
         $('.product-table').tablesorter().trigger('update', resort);
-        alert("Uaktualniono produkt");
+        //alert("Uaktualniono produkt");
+        showToast("Uaktualniono produkt");
         editRowIndex = null;
         addButton.innerText = "Dodaj";
       } else {
         addRow(product);
         addToGallery(product);
-        alert("Dodano nowy produkt.");
+        // alert("Dodano nowy produkt.");
+        showToast("Dodano nowy produkt.");
       }
 
       resetForm();
       document.querySelector(".add-feedback").style.display = "none";
     } else {
-        alert("Produkt o podanej nazwie już istnieje.");
+        // alert("Produkt o podanej nazwie już istnieje.");
+        showToast("Produkt o podanej nazwie już istnieje.");
     }
   } else {
     document.querySelector(".add-feedback").style.display = "block";
@@ -355,7 +359,8 @@ function addToCart(product) {
       // zmiana liczby sztuk
       if(this.value < 0) {
         this.value = 1;
-        alert("Wprowadzono nieprawidłową liczbę sztuk. Liczba sztuk została automatycznie ustawiona na 1");
+        // alert("Wprowadzono nieprawidłową liczbę sztuk. Liczba sztuk została automatycznie ustawiona na 1");
+        showToast("Wprowadzono nieprawidłową liczbę sztuk. Liczba sztuk została automatycznie ustawiona na 1");
       }
       var itemIndex = this.closest("tr").rowIndex;
       var itemName = document.querySelector(".cart-table").rows[itemIndex].cells[0].innerText;
@@ -490,7 +495,8 @@ function deleteElement(rowNumber) {
   galleryElement.remove();
   resort = true;
   $('.product-table').tablesorter().trigger('update', resort);
-  alert("Usunięto produkt.");
+  // alert("Usunięto produkt.");
+  showToast("Usunięto produkt.");
 }
 
 function addElementToCart(index) {
@@ -520,7 +526,8 @@ function addElementToCart(index) {
   
   window.localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
 
-  alert("Przedmiot zostal dodany do koszyka.");
+  showToast("Przedmiot zostal dodany do koszyka.");
+  //alert("Przedmiot zostal dodany do koszyka.");
 }
 
 
@@ -580,4 +587,15 @@ function editElementOnClick(index) {
   document.querySelector(".option-feedback").style.display = "none";
 
   document.querySelector(".add-feedback").style.display = "none";
+}
+
+
+function showToast(alert) {
+  document.querySelector(".toast-body .toast-message").innerText = alert;
+  document.querySelector(".toast").style.display = "flex";
+  $(".toast").toast('show');
+  setTimeout(() => {
+    document.querySelector(".toast").style.display = "none";
+    $(".toast").toast('hide');
+  }, 3000);
 }

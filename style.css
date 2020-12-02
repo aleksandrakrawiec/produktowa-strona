@@ -85,4 +85,14 @@ section {
       margin: 2px;
       font-size: 0.7rem; }
 
+.toast {
+  background-color: silver;
+  position: fixed;
+  z-index: 1;
+  display: none;
+  justify-content: space-between;
+  flex-direction: row; }
+  .toast span {
+    display: block; }
+
 /*# sourceMappingURL=style.css.map */

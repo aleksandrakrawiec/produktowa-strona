@@ -137,3 +137,16 @@ section {
     }
   }
 }
+
+.toast {
+  background-color: silver;
+  position: fixed;
+  z-index: 1;
+  display: none;
+  justify-content: space-between; 
+  flex-direction: row;
+
+  span {
+    display: block;
+  }
+}
