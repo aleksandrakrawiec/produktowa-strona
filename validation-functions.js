@@ -1,7 +1,7 @@
 function isNameValid() {
-    var text = inputName.value;
-    var result = lettersOnlyExpression.test(text);
-    var feedbaackDiv = document.querySelector("#name-feedback");
+    let text = inputName.value;
+    let result = lettersOnlyExpression.test(text);
+    let feedbaackDiv = document.querySelector("#name-feedback");
     if (text === "")  {
       feedbaackDiv.innerText = "Pole obowiązkowe"
       inputName.classList.add("is-invalid");
@@ -20,9 +20,9 @@ function isNameValid() {
 }
 
 function isPriceValid() {
-    var text = inputPrice.value;
-    var feedbaackDiv = document.querySelector("#price-feedback");
-    var result = moneyExpression.test(text);
+    let text = inputPrice.value;
+    let feedbaackDiv = document.querySelector("#price-feedback");
+    let result = moneyExpression.test(text);
     if(text === "") {
       feedbaackDiv.innerText = "Pole obowiązkowe";
       inputPrice.classList.add("is-invalid");
@@ -45,9 +45,9 @@ function isPriceValid() {
 
 
 function isCodeValid() {
-    var text = inputCode.value;
-    var result = productCodeExpression.test(text);
-    var feedbaackDiv = document.querySelector("#code-feedback");
+    let text = inputCode.value;
+    let result = productCodeExpression.test(text);
+    let feedbaackDiv = document.querySelector("#code-feedback");
     if (text === "")  {
       feedbaackDiv.innerText = "Pole obowiązkowe"
       inputCode.classList.add("is-invalid");
@@ -67,9 +67,9 @@ function isCodeValid() {
 
 
 function isVATValid () {
-    var text = inputVAT.value;
-    var result = numbersOnlyExpression.test(text);
-    var feedbaackDiv = document.querySelector("#vat-feedback");
+    let text = inputVAT.value;
+    let result = numbersOnlyExpression.test(text);
+    let feedbaackDiv = document.querySelector("#vat-feedback");
   
     if (text === "")  {
       feedbaackDiv.innerText = "Pole obowiązkowe"
@@ -105,7 +105,7 @@ function isCategoryValid () {
 
 
 function isOptionsValid () {
-    var checkedOptions = document.querySelectorAll(".option:checked").length;
+    let checkedOptions = document.querySelectorAll(".option:checked").length;
     if (checkedOptions >= 2) {
       document.querySelector(".option-feedback").style.display = "none";
       return 0;

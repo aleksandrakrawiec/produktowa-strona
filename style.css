@@ -88,6 +88,8 @@ section {
 .toast {
   background-color: silver;
   position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1;
   display: none;
   justify-content: space-between;
